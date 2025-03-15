@@ -1,0 +1,185 @@
+ import java.util.*;
+
+// Abstract class
+abstract class Room {
+    protected int roomNumber;
+    protected boolean isBooked;
+    
+    public Room(int roomNumber) {
+        this.roomNumber = roomNumber;
+        this.isBooked = false;
+    }
+    
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+    
+    public boolean isBooked() {
+        return isBooked;
+    }
+    
+    public void bookRoom() {
+        isBooked = true;
+    }
+    
+    public void vacateRoom() {
+        isBooked = false;
+    }
+    
+    public abstract double getPrice();
+}
+
+// Concrete classes for different room types
+class StandardRoom extends Room {
+    public StandardRoom(int roomNumber) {
+        super(roomNumber);
+    }
+    
+    @Override
+    public double getPrice() {
+        return 100.0;
+    }
+}
+
+class DeluxeRoom extends Room {
+    public DeluxeRoom(int roomNumber) {
+        super(roomNumber);
+    }
+    
+    @Override
+    public double getPrice() {
+        return 200.0;
+    }
+}
+
+// Customer Class
+class Customer {
+    private String name;
+    private int customerId;
+    
+    public Customer(String name, int customerId) {
+        this.name = name;
+        this.customerId = customerId;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public int getCustomerId() {
+        return customerId;
+    }
+}
+
+// Hotel Class
+class Hotel {
+    private List<Room> rooms;
+    private Map<Integer, Customer> bookings;
+    
+    public Hotel() {
+        rooms = new ArrayList<>();
+        bookings = new HashMap<>();
+        initializeRooms();
+    }
+    private void initializeRooms() {
+        for (int i = 1; i <= 5; i++) {
+            rooms.add(new StandardRoom(i));
+        }
+        for (int i = 6; i <= 10; i++) {
+            rooms.add(new DeluxeRoom(i));
+        }
+    }
+    public void bookRoom(int roomNumber, Customer customer) {
+        for (Room room : rooms) {
+            if (room.getRoomNumber() == roomNumber && !room.isBooked()) {
+                room.bookRoom();
+                bookings.put(roomNumber, customer);
+                System.out.println("Room " + roomNumber + " booked successfully for " + customer.getName());
+                return;
+            }
+        }
+        System.out.println("Room " + roomNumber + " is not available.");
+    }
+    
+    public void checkoutRoom(int roomNumber) {
+        if (bookings.containsKey(roomNumber)) {
+            for (Room room : rooms) {
+                if (room.getRoomNumber() == roomNumber) {
+                    room.vacateRoom();
+                    bookings.remove(roomNumber);
+                    System.out.println("Room " + roomNumber + " has been vacated.");
+                    return;
+                }
+            }
+        } else {
+            System.out.println("Room " + roomNumber + " is not booked.");
+        }
+    }
+    
+    public void displayAvailableRooms() {
+        System.out.println("Available Rooms:");
+        for (Room room : rooms) {
+            if (!room.isBooked()) {
+                System.out.println("Room " + room.getRoomNumber() + " - Price: $" + room.getPrice());
+            }
+        }
+    }
+}
+
+// Main Class
+public class HotelManagementSystem {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        Hotel hotel = new Hotel();
+        
+        System.out.println("Welcome to Rose View Hotel!");
+        
+        while (true) {
+            System.out.println("\nHotel Management System");
+            System.out.println("1. Book a Room");
+            System.out.println("2. Checkout");
+            System.out.println("3. View Available Rooms");
+            System.out.println("4. Exit");
+            System.out.print("Enter choice: ");
+            
+            try {
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+                
+                switch (choice) {
+                    case 1:
+                        System.out.print("Enter Customer Name: ");
+                        String name = scanner.nextLine();
+                        System.out.print("Enter Customer ID: ");
+                        int id = scanner.nextInt();
+                        System.out.print("Enter Room Number: ");
+                        int roomNumber = scanner.nextInt();
+                        if (roomNumber < 1 || roomNumber > 10) {
+                            System.out.println("Invalid Room Number! Please enter a number between 1 and 10.");
+                            continue;
+                        }
+                        Customer customer = new Customer(name, id);
+                        hotel.bookRoom(roomNumber, customer);
+                        break;
+                    case 2:
+                        System.out.print("Enter Room Number: ");
+                        int checkoutRoom = scanner.nextInt();
+                        hotel.checkoutRoom(checkoutRoom);
+                        break;
+                    case 3:
+                        hotel.displayAvailableRooms();
+                        break;
+                    case 4:
+                        System.out.println("Exiting... Thank you!");
+                        scanner.close();
+                        return;
+                    default:
+                        System.out.println("Invalid choice! Please try again.");
+                }
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input! Please enter a valid number.");
+                scanner.next();
+            }
+        }
+    }
+}
