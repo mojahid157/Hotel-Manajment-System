@@ -1,4 +1,4 @@
- import java.util.*;
+ import java.util.;
 
 // Abstract class
 abstract class Room {
