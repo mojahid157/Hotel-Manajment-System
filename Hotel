@@ -1,43 +1,41 @@
- import java.util.;
+ import java.util.*;
 
-// Abstract class
 abstract class Room {
     protected int roomNumber;
     protected boolean isBooked;
-    
+
     public Room(int roomNumber) {
         this.roomNumber = roomNumber;
         this.isBooked = false;
     }
-    
+
     public int getRoomNumber() {
         return roomNumber;
     }
-    
+
     public boolean isBooked() {
         return isBooked;
     }
-    
+
     public void bookRoom() {
         isBooked = true;
     }
-    
+
     public void vacateRoom() {
         isBooked = false;
     }
-    
+
     public abstract double getPrice();
 }
 
-// Concrete classes for different room types
 class StandardRoom extends Room {
     public StandardRoom(int roomNumber) {
         super(roomNumber);
     }
-    
+
     @Override
     public double getPrice() {
-        return 100.0;
+        return 500.0;
     }
 }
 
@@ -45,42 +43,41 @@ class DeluxeRoom extends Room {
     public DeluxeRoom(int roomNumber) {
         super(roomNumber);
     }
-    
+
     @Override
     public double getPrice() {
-        return 200.0;
+        return 1000.0;
     }
 }
 
-// Customer Class
 class Customer {
     private String name;
     private int customerId;
-    
+
     public Customer(String name, int customerId) {
         this.name = name;
         this.customerId = customerId;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public int getCustomerId() {
         return customerId;
     }
 }
 
-// Hotel Class
 class Hotel {
     private List<Room> rooms;
     private Map<Integer, Customer> bookings;
-    
+
     public Hotel() {
         rooms = new ArrayList<>();
         bookings = new HashMap<>();
         initializeRooms();
     }
+
     private void initializeRooms() {
         for (int i = 1; i <= 5; i++) {
             rooms.add(new StandardRoom(i));
@@ -89,6 +86,7 @@ class Hotel {
             rooms.add(new DeluxeRoom(i));
         }
     }
+
     public void bookRoom(int roomNumber, Customer customer) {
         for (Room room : rooms) {
             if (room.getRoomNumber() == roomNumber && !room.isBooked()) {
@@ -100,14 +98,19 @@ class Hotel {
         }
         System.out.println("Room " + roomNumber + " is not available.");
     }
-    
+
     public void checkoutRoom(int roomNumber) {
         if (bookings.containsKey(roomNumber)) {
             for (Room room : rooms) {
                 if (room.getRoomNumber() == roomNumber) {
+                    Customer customer = bookings.get(roomNumber);
+                    double bill = room.getPrice();
                     room.vacateRoom();
                     bookings.remove(roomNumber);
                     System.out.println("Room " + roomNumber + " has been vacated.");
+                    System.out.println("Customer: " + customer.getName() + " | ID: " + customer.getCustomerId());
+                    System.out.println("Total Bill: " + bill);
+                    System.out.println("✅ Payment Successful. Thank you!");
                     return;
                 }
             }
@@ -115,37 +118,45 @@ class Hotel {
             System.out.println("Room " + roomNumber + " is not booked.");
         }
     }
-    
+
     public void displayAvailableRooms() {
         System.out.println("Available Rooms:");
         for (Room room : rooms) {
             if (!room.isBooked()) {
-                System.out.println("Room " + room.getRoomNumber() + " - Price: $" + room.getPrice());
+                System.out.println("Room " + room.getRoomNumber() + " - Price: " + room.getPrice());
             }
         }
     }
 }
 
-// Main Class
-public class HotelManagementSystem {
+public class HotelManagementSystem3 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Hotel hotel = new Hotel();
-        
-        System.out.println("Welcome to Rose View Hotel!");
-        
+
+        String border = "*".repeat(40);
+
+        System.out.println(border);
+        System.out.println("*                             *");
+        System.out.println("*    Welcome to Rose View     *");
+        System.out.println("*          Hotel!             *");
+        System.out.println("*                             *");
+        System.out.println(border);
+
+        System.out.println("\nEnjoy your stay at our luxurious hotel!");
+        System.out.println("________________________________________________");
+
         while (true) {
-            System.out.println("\nHotel Management System");
             System.out.println("1. Book a Room");
             System.out.println("2. Checkout");
             System.out.println("3. View Available Rooms");
             System.out.println("4. Exit");
             System.out.print("Enter choice: ");
-            
+
             try {
                 int choice = scanner.nextInt();
                 scanner.nextLine();
-                
+
                 switch (choice) {
                     case 1:
                         System.out.print("Enter Customer Name: ");
@@ -161,18 +172,27 @@ public class HotelManagementSystem {
                         Customer customer = new Customer(name, id);
                         hotel.bookRoom(roomNumber, customer);
                         break;
+
                     case 2:
                         System.out.print("Enter Room Number: ");
                         int checkoutRoom = scanner.nextInt();
                         hotel.checkoutRoom(checkoutRoom);
                         break;
+
                     case 3:
                         hotel.displayAvailableRooms();
                         break;
+
                     case 4:
-                        System.out.println("Exiting... Thank you!");
+                        System.out.println("\n" +
+                            "*****************************************\n" +
+                            "*                                       *\n" +
+                            "*    🌟 Exiting... Thank You! 🌟         *\n" +
+                            "*                                       *\n" +
+                            "*****************************************\n");
                         scanner.close();
                         return;
+
                     default:
                         System.out.println("Invalid choice! Please try again.");
                 }
